@@ -12,6 +12,7 @@
 float posX = 0.0f, posY = 0.0f;
 float angle = 0.0f, scale = 1.0f, shearX = 0.0f;
 float flameTime = 0.0f;
+int fireCooldown = 0;
 
 // --- Screen Dimensions ---
 float screenW = 800.0f;
@@ -208,9 +209,35 @@ void handleContinuousMovement() {
     if (keys['q'] || keys['Q']) shearX -= 0.02f;
     if (keys['e'] || keys['E']) shearX += 0.02f;
     if (keys['r'] || keys['R']) { posX = 0.0f; posY = 0.0f; angle = 0.0f; scale = 1.0f; shearX = 0.0f; lasers.clear(); }
+    if (keys[' '] && fireCooldown == 0) {
+        float rad = angle * PI / 180.0f;
+        float localNoseX = 80.0f * shearX * scale;
+        float localNoseY = 80.0f * scale;
+        float startX = posX + (localNoseX * cosf(rad) - localNoseY * sinf(rad));
+        float startY = posY + (localNoseX * sinf(rad) + localNoseY * cosf(rad));
+        float dirX = shearX * cosf(rad) - 1.0f * sinf(rad);
+        float dirY = shearX * sinf(rad) + 1.0f * cosf(rad);
+        float len = sqrtf(dirX * dirX + dirY * dirY); dirX /= len; dirY /= len;
+        float laserAngle = atan2f(dirY, dirX) * 180.0f / PI - 90.0f;
+
+        bool found = false;
+        for (size_t i = 0; i < lasers.size(); i++) {
+            if (!lasers[i].active) {
+                lasers[i].x = startX; lasers[i].y = startY; 
+                lasers[i].dx = dirX * 15.0f; lasers[i].dy = dirY * 15.0f;
+                lasers[i].angle = laserAngle; 
+                lasers[i].scale = scale; 
+                lasers[i].active = true; found = true; break;
+            }
+        }
+        if(!found) lasers.push_back({startX, startY, dirX * 15.0f, dirY * 15.0f, laserAngle, scale, true});
+        
+        fireCooldown = 5;
+    }
 }
 
 void timer(int value) {
+  if (fireCooldown > 0) fireCooldown--;
     flameTime += 0.5f; handleContinuousMovement();
     
     for(int i = 0; i < 200; i++) {
@@ -233,30 +260,7 @@ void timer(int value) {
 
 void keyboardDown(unsigned char key, int x, int y) {
     keys[key] = true;
-    if (key == 27) exit(0); 
-    if (key == ' ') { 
-        float rad = angle * PI / 180.0f;
-        float localNoseX = 80.0f * shearX * scale;
-        float localNoseY = 80.0f * scale;
-        float startX = posX + (localNoseX * cosf(rad) - localNoseY * sinf(rad));
-        float startY = posY + (localNoseX * sinf(rad) + localNoseY * cosf(rad));
-        float dirX = shearX * cosf(rad) - 1.0f * sinf(rad);
-        float dirY = shearX * sinf(rad) + 1.0f * cosf(rad);
-        float len = sqrtf(dirX * dirX + dirY * dirY); dirX /= len; dirY /= len;
-        float laserAngle = atan2f(dirY, dirX) * 180.0f / PI - 90.0f;
-
-        bool found = false;
-        for (size_t i = 0; i < lasers.size(); i++) {
-            if (!lasers[i].active) {
-                lasers[i].x = startX; lasers[i].y = startY; 
-                lasers[i].dx = dirX * 15.0f; lasers[i].dy = dirY * 15.0f;
-                lasers[i].angle = laserAngle; 
-                lasers[i].scale = scale; 
-                lasers[i].active = true; found = true; break;
-            }
-        }
-        if(!found) lasers.push_back({startX, startY, dirX * 15.0f, dirY * 15.0f, laserAngle, scale, true});
-    }
+    if (key == 27) exit(0);
 }
 
 void keyboardUp(unsigned char key, int x, int y) { keys[key] = false; }
