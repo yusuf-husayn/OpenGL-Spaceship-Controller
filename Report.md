@@ -59,6 +59,7 @@ format: obsidian-md
 - `<GL/glut.h>`: 
 	دي هيا ال Library للتعامل مع الـ OpenGL والـ Window System.
 - `std::vector`:
+
 	عبارة عن Dynamic Array بيغير حجمه وقت الـ Runtime.
 - `struct`:
 	دا Data Structure بتجمع متغيرات مختلفة تحت اسم واحد.
