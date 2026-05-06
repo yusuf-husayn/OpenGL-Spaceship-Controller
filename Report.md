@@ -5,7 +5,7 @@ tags:
   - exam
   - OpenGL
   - CPP
-date: 2026-05-06T18:18:00
+date: 06/05/2026 @ 5:16:45 PM
 status: studying
 format: obsidian-md
 ---
