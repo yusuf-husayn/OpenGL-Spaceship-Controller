@@ -14,6 +14,10 @@ An interactive, real-time 2D spaceship simulation built with **C++** and **OpenG
 
 ---
 
+## 🎥 Gameplay Demo
+<video src="https://github.com/user-attachments/assets/7c02ad07-4497-4ff1-a557-5c378c78f011" controls="controls" style="max-width: 100%;">
+</video>
+
 ## 🎮 Keyboard Controls
 
 | Key | Action |
