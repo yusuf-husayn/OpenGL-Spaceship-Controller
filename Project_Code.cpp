@@ -149,3 +149,41 @@ void timer(int value) {
         }
         stars[i].brightness = 0.5f + ((rand() % 50) / 100.0f); 
     }
+for (size_t i = 0; i < lasers.size(); i++) {
+        if (lasers[i].active) {
+            lasers[i].x += lasers[i].dx; lasers[i].y += lasers[i].dy; 
+            if (lasers[i].y > screenH/2 || lasers[i].y < -screenH/2 || lasers[i].x > screenW/2 || lasers[i].x < -screenW/2) lasers[i].active = false; 
+        }
+    }
+    glutPostRedisplay(); glutTimerFunc(30, timer, 0); 
+}
+
+void keyboardDown(unsigned char key, int x, int y) {
+    keys[key] = true;
+    if (key == 27) exit(0);
+}
+
+void keyboardUp(unsigned char key, int x, int y) { keys[key] = false; }
+void specialDown(int key, int x, int y) { specialKeys[key] = true; }
+void specialUp(int key, int x, int y) { specialKeys[key] = false; }
+
+void init() {
+    glClearColor(0.01f, 0.02f, 0.05f, 1.0f); 
+    for(int i = 0; i < 200; i++) { 
+        stars[i].x = (rand() % 2000) - 1000; 
+        stars[i].y = (rand() % 1500) - 750; 
+        stars[i].size = (rand() % 3) + 1.0f; 
+        stars[i].speed = ((rand() % 5) + 2) * 0.5f; 
+    }
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv); glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_ALPHA);
+    glutInitWindowSize(screenW, screenH); glutCreateWindow("INTERACTIVE SPACESHIP CONTROLLER");
+    init(); 
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyboardDown); glutKeyboardUpFunc(keyboardUp);
+    glutSpecialFunc(specialDown); glutSpecialUpFunc(specialUp);
+    glutTimerFunc(0, timer, 0); glutMainLoop(); return 0;
+}
