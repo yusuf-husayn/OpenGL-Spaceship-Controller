@@ -95,9 +95,6 @@ void drawBackgroundAndUI() {
     glColor3f(0.95f, 0.95f, 0.85f); drawCircle(50.0f, moonX, moonY, 40);
     glColor3f(0.80f, 0.80f, 0.70f); drawCircle(10.0f, moonX-15, moonY-15, 20); drawCircle(14.0f, moonX+20, moonY+15, 20); drawCircle(8.0f, moonX-5, moonY+25, 20);
 
-    
-
-
     // =====================================
     // Responsive UI Panels (Bottom Aligned)
     // =====================================
@@ -220,6 +217,8 @@ void handleContinuousMovement() {
         float startY = posY + (localNoseX * sinf(rad) + localNoseY * cosf(rad));
         float dirX = shearX * cosf(rad) - 1.0f * sinf(rad);
         float dirY = shearX * sinf(rad) + 1.0f * cosf(rad);
+        float len = sqrtf(dirX * dirX + dirY * dirY); dirX /= len; dirY /= len;
+        float laserAngle = atan2f(dirY, dirX) * 180.0f / PI - 90.0f;
 
 bool found = false;
         for (size_t i = 0; i < lasers.size(); i++) {
