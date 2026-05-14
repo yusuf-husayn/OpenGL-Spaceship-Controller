@@ -120,5 +120,34 @@ void handleContinuousMovement() {
         float startY = posY + (localNoseX * sinf(rad) + localNoseY * cosf(rad));
         float dirX = shearX * cosf(rad) - 1.0f * sinf(rad);
         float dirY = shearX * sinf(rad) + 1.0f * cosf(rad);
+
+bool found = false;
+        for (size_t i = 0; i < lasers.size(); i++) {
+            if (!lasers[i].active) {
+                lasers[i].x = startX; lasers[i].y = startY; 
+                lasers[i].dx = dirX * 15.0f; lasers[i].dy = dirY * 15.0f;
+                lasers[i].angle = laserAngle; 
+                lasers[i].scale = scale; 
+                lasers[i].active = true; found = true; break;
+            }
+        }
+        if(!found) lasers.push_back({startX, startY, dirX * 15.0f, dirY * 15.0f, laserAngle, scale, true});
+        
+        fireCooldown = 5;
+    }
+}
+
+void timer(int value) {
+  if (fireCooldown > 0) fireCooldown--;
+    flameTime += 0.5f; handleContinuousMovement();
+
+    for(int i = 0; i < 200; i++) {
+        stars[i].y -= stars[i].speed; 
+        if(stars[i].y < -screenH/2.0f) { 
+            stars[i].y = screenH/2.0f; 
+            stars[i].x = (rand() % (int)screenW) - screenW/2.0f; 
+        }
+        stars[i].brightness = 0.5f + ((rand() % 50) / 100.0f); 
+    }
         float len = sqrtf(dirX * dirX + dirY * dirY); dirX /= len; dirY /= len;
         float laserAngle = atan2f(dirY, dirX) * 180.0f / PI - 90.0f;
