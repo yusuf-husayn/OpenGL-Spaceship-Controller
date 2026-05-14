@@ -57,3 +57,44 @@
 
     glDisable(GL_BLEND);
     }
+
+
+void drawLasers() {
+    for (size_t i = 0; i < lasers.size(); i++) {
+        if (lasers[i].active) {
+            glPushMatrix();
+            glTranslatef(lasers[i].x, lasers[i].y, 0.0f);
+            glRotatef(lasers[i].angle, 0.0f, 0.0f, 1.0f);
+            glScalef(lasers[i].scale, lasers[i].scale, 1.0f); 
+            glColor3f(0.0f, 1.0f, 1.0f); 
+            glBegin(GL_QUADS); glVertex2f(-2.0f, 0.0f); glVertex2f(2.0f, 0.0f); glVertex2f(2.0f, 20.0f); glVertex2f(-2.0f, 20.0f); glEnd();
+            glPopMatrix();
+        }
+    }
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    drawBackgroundAndUI();
+    drawLasers();
+    glPushMatrix();
+    glTranslatef(posX, posY, 0.0f);        
+    glRotatef(angle, 0.0f, 0.0f, 1.0f);    
+    glScalef(scale, scale, 1.0f);          
+    float shearMatrix[16] = {1.0f, 0.0f, 0.0f, 0.0f, shearX, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+    glMultMatrixf(shearMatrix);
+    drawSpaceship();
+    glPopMatrix();
+    glutSwapBuffers();
+}
+
+void reshape(int w, int h) {
+    if (h == 0) h = 1;
+    screenW = (float)w;
+    screenH = (float)h;
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-screenW/2.0f, screenW/2.0f, -screenH/2.0f, screenH/2.0f);
+    glMatrixMode(GL_MODELVIEW);
+}
