@@ -149,5 +149,3 @@ void timer(int value) {
         }
         stars[i].brightness = 0.5f + ((rand() % 50) / 100.0f); 
     }
-        float len = sqrtf(dirX * dirX + dirY * dirY); dirX /= len; dirY /= len;
-        float laserAngle = atan2f(dirY, dirX) * 180.0f / PI - 90.0f;
