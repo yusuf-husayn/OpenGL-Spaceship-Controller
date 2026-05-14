@@ -98,3 +98,27 @@ void reshape(int w, int h) {
     gluOrtho2D(-screenW/2.0f, screenW/2.0f, -screenH/2.0f, screenH/2.0f);
     glMatrixMode(GL_MODELVIEW);
 }
+
+void handleContinuousMovement() {
+    float moveSpeed = 5.0f; 
+    if (specialKeys[GLUT_KEY_UP]) posY += moveSpeed;
+    if (specialKeys[GLUT_KEY_DOWN]) posY -= moveSpeed;
+    if (specialKeys[GLUT_KEY_LEFT]) posX -= moveSpeed;
+    if (specialKeys[GLUT_KEY_RIGHT]) posX += moveSpeed;
+    if (keys['a'] || keys['A']) angle += 3.0f;
+    if (keys['d'] || keys['D']) angle -= 3.0f;
+    if (keys['w'] || keys['W']) scale += 0.02f;
+    if (keys['s'] || keys['S']) { if (scale > 0.2f) scale -= 0.02f; }
+    if (keys['q'] || keys['Q']) shearX -= 0.02f;
+    if (keys['e'] || keys['E']) shearX += 0.02f;
+    if (keys['r'] || keys['R']) { posX = 0.0f; posY = 0.0f; angle = 0.0f; scale = 1.0f; shearX = 0.0f; lasers.clear(); }
+    if (keys[' '] && fireCooldown == 0) {
+        float rad = angle * PI / 180.0f;
+        float localNoseX = 80.0f * shearX * scale;
+        float localNoseY = 80.0f * scale;
+        float startX = posX + (localNoseX * cosf(rad) - localNoseY * sinf(rad));
+        float startY = posY + (localNoseX * sinf(rad) + localNoseY * cosf(rad));
+        float dirX = shearX * cosf(rad) - 1.0f * sinf(rad);
+        float dirY = shearX * sinf(rad) + 1.0f * cosf(rad);
+        float len = sqrtf(dirX * dirX + dirY * dirY); dirX /= len; dirY /= len;
+        float laserAngle = atan2f(dirY, dirX) * 180.0f / PI - 90.0f;
