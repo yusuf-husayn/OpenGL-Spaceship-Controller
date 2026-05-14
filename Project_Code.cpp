@@ -29,3 +29,31 @@
     drawText(textX, headerY - step*4.2f, GLUT_BITMAP_HELVETICA_12, "Q / E: Shear (Skew)", 1.0f, 1.0f, 1.0f);
     drawText(textX, headerY - step*5.2f, GLUT_BITMAP_HELVETICA_12, "SPACE: Fire Laser", 1.0f, 0.6f, 0.2f);
     drawText(textX, headerY - step*6.2f, GLUT_BITMAP_HELVETICA_12, "ESC: Exit Program", 1.0f, 0.3f, 0.3f);
+    float rightX = screenW/2.0f - pW - pad;
+
+    glColor4f(0.04f, 0.12f, 0.1f, 0.8f); 
+    drawRoundedRect(rightX, bottomY, pW, pH, 5, true);
+    glColor3f(0.2f, 0.5f, 0.3f); glLineWidth(2.0f);
+    drawRoundedRect(rightX, bottomY, pW, pH, 5, false); glLineWidth(1.0f);
+
+    float rTextX = rightX + 15.0f;
+    glBegin(GL_LINES); glVertex2f(rightX + 10, headerY - 5); glVertex2f(rightX + pW - 10, headerY - 5); glEnd();
+
+    drawText(rightX + 65.0f, headerY, GLUT_BITMAP_HELVETICA_18, "CURRENT STATUS", 0.5f, 1.0f, 0.5f);
+    
+    std::stringstream p, r, s, sh;
+    p << "Position: (" << std::fixed << std::setprecision(2) << posX << ", " << posY << ")";
+    r << "Rotation Angle: " << angle << " deg";
+    s << "Scale Factor: " << scale << "x";
+    sh << "Shear X: " << std::fixed << std::setprecision(2) << shearX;
+
+    drawText(rTextX, headerY - step*1.5f, GLUT_BITMAP_HELVETICA_12, p.str(), 1.0f, 1.0f, 1.0f);
+    drawText(rTextX, headerY - step*2.8f, GLUT_BITMAP_HELVETICA_12, r.str(), 1.0f, 1.0f, 1.0f);
+    drawText(rTextX, headerY - step*4.1f, GLUT_BITMAP_HELVETICA_12, s.str(), 1.0f, 1.0f, 1.0f);
+    drawText(rTextX, headerY - step*5.4f, GLUT_BITMAP_HELVETICA_12, sh.str(), 1.0f, 1.0f, 1.0f);
+    
+    drawText(rTextX, headerY - step*6.7f, GLUT_BITMAP_HELVETICA_12, "Rendering: ", 1.0f, 1.0f, 1.0f);
+    drawText(rTextX + 80.0f, headerY - step*6.7f, GLUT_BITMAP_HELVETICA_12, "Active", 0.4f, 1.0f, 0.4f); 
+
+    glDisable(GL_BLEND);
+    }
