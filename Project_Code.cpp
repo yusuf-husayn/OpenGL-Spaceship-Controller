@@ -1,3 +1,103 @@
+#include <GL/glut.h>
+#include <math.h>
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <stdlib.h>
+#include <vector>
+
+#define PI 3.14159265f
+
+    // Global Variables
+float posX = 0.0f, posY = 0.0f;
+float angle = 0.0f, scale = 1.0f, shearX = 0.0f;
+float flameTime = 0.0f;
+int fireCooldown = 0;
+
+    // Screen Dimensions
+float screenW = 800.0f;
+float screenH = 600.0f;
+
+bool keys[256] = {false};
+bool specialKeys[256] = {false};
+
+struct Star { float x, y, size, speed, brightness; };
+Star stars[200]; 
+
+struct Laser { float x, y, dx, dy, angle, scale; bool active; };
+std::vector<Laser> lasers;
+
+    // Text drawing function
+void drawText(float x, float y, void* font, const std::string& text, float r, float g, float b) {
+    glColor3f(r, g, b);
+    glRasterPos2f(x, y);
+    for (char c : text) glutBitmapCharacter(font, c);
+}
+
+void drawCircle(float radius, float cx, float cy, int segments) {
+    glBegin(GL_POLYGON);
+    for (int i = 0; i < segments; i++) {
+        float theta = 2.0f * PI * float(i) / float(segments);
+        glVertex2f(radius * cosf(theta) + cx, radius * sinf(theta) + cy);
+    }
+    glEnd();
+}
+
+void drawRoundedRect(float x, float y, float w, float h, float r, bool filled) {
+    int segments = 10;
+    if (filled) glBegin(GL_POLYGON); else glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < segments; i++) {
+        float theta = 0.0f + (PI/2.0f) * (float(i)/segments);
+        glVertex2f(x + w - r + r*cos(theta), y + h - r + r*sin(theta));
+    }
+    for (int i = 0; i < segments; i++) {
+        float theta = PI/2.0f + (PI/2.0f) * (float(i)/segments);
+        glVertex2f(x + r + r*cos(theta), y + h - r + r*sin(theta));
+    }
+    for (int i = 0; i < segments; i++) {
+        float theta = PI + (PI/2.0f) * (float(i)/segments);
+        glVertex2f(x + r + r*cos(theta), y + r + r*sin(theta));
+    }
+    for (int i = 0; i < segments; i++) {
+        float theta = 3.0f*PI/2.0f + (PI/2.0f) * (float(i)/segments);
+        glVertex2f(x + w - r + r*cos(theta), y + r + r*sin(theta));
+    }
+    glEnd();
+}
+
+void drawSpaceship() {
+    float flicker = sinf(flameTime) * 10.0f;
+    glColor3f(1.0f, 0.2f, 0.0f); glBegin(GL_TRIANGLES); glVertex2f(-15, -40); glVertex2f(15, -40); glVertex2f(0, -75-flicker); glEnd();
+    glColor3f(1.0f, 0.9f, 0.0f); glBegin(GL_TRIANGLES); glVertex2f(-8, -40); glVertex2f(8, -40); glVertex2f(0, -60-flicker*0.5f); glEnd();
+    glColor3f(0.9f, 0.0f, 0.0f); glBegin(GL_TRIANGLES); glVertex2f(20, -30); glVertex2f(20, 10); glVertex2f(50, -40); glVertex2f(-20, -30); glVertex2f(-20, 10); glVertex2f(-50, -40); glEnd();
+    glColor3f(0.95f, 0.95f, 0.95f); glBegin(GL_QUADS); glVertex2f(-20, -40); glVertex2f(20, -40); glVertex2f(20, 40); glVertex2f(-20, 40); glEnd();
+    glColor3f(0.9f, 0.0f, 0.0f); glBegin(GL_TRIANGLES); glVertex2f(20, 40); glVertex2f(-20, 40); glVertex2f(0, 80); glEnd();
+    glColor3f(0.2f, 0.2f, 0.2f); drawCircle(10, 0, 0, 30); drawCircle(10, 0, 25, 30);
+    glColor3f(0.0f, 1.0f, 1.0f); drawCircle(8, 0, 0, 30); drawCircle(8, 0, 25, 30);
+}
+
+void drawBackgroundAndUI() {
+    for(int i = 0; i < 200; i++) {
+        glColor3f(stars[i].brightness, stars[i].brightness, stars[i].brightness); 
+        glPointSize(stars[i].size); glBegin(GL_POINTS); glVertex2f(stars[i].x, stars[i].y); glEnd();
+    }
+
+    float moonX = -screenW/2.0f + 150.0f;
+    float moonY = screenH/2.0f - 150.0f;
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    for (int i = 0; i < 10; i++) {
+        glColor4f(0.9f, 0.9f, 0.8f, 0.02f + (0.03f * i)); 
+        drawCircle(85.0f - (i * 3.5f), moonX, moonY, 40); 
+    }
+    glDisable(GL_BLEND);
+    glColor3f(0.95f, 0.95f, 0.85f); drawCircle(50.0f, moonX, moonY, 40);
+    glColor3f(0.80f, 0.80f, 0.70f); drawCircle(10.0f, moonX-15, moonY-15, 20); drawCircle(14.0f, moonX+20, moonY+15, 20); drawCircle(8.0f, moonX-5, moonY+25, 20);
+
+    
+
+
     // =====================================
     // Responsive UI Panels (Bottom Aligned)
     // =====================================
